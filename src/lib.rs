@@ -318,12 +318,12 @@ impl App {
         let idx = (Math::random() * affirmations.len() as f64).floor() as usize;
         let pick = affirmations[idx.min(affirmations.len() - 1)];
         self.overlay_affirm.set_inner_text(pick);
-        self.overlay.style().set_property("display", "flex").ok();
         self.overlay.set_attribute("aria-hidden", "false").ok();
+let _ = self.overlay.style().remove_property("display");
     }
 
     fn hide_overlay(&self) {
-        self.overlay.style().set_property("display", "none").ok();
         self.overlay.set_attribute("aria-hidden", "true").ok();
+let _ = self.overlay.style().remove_property("display");
     }
 }
