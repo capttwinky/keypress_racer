@@ -1,46 +1,104 @@
 :root {
+  --bg: #0b0b0f;
+  --fg: #e7e7ee;
+  --muted: #b8b8c2;
+  --surface: #141420;
+  --border: #2a2a3a;
+  --accent1: #6ee7ff;
+  --accent2: #a78bfa;
+  --accent3: #f472b6;
+  --radius: 14px;
+  --gap: 12px;
   --pct: 0%;
 }
 
 * { box-sizing: border-box; }
 html, body {
-  margin: 0; padding: 0; font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background: #0b0b0f; color: #e7e7ee;
+  margin: 0; padding: 0;
+  font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: var(--fg);
 }
 main { max-width: 720px; margin: 4rem auto; padding: 0 1rem; }
 
-h1 { margin: 0 0 0.25rem; font-size: 2rem; }
-p { color: #b8b8c2; margin: 0 0 1rem; }
+h1 { margin: 0 0 .25rem; font-size: 2rem; }
+p { color: var(--muted); margin: 0 0 1rem; }
 
-controls { display: flex; gap: 0.75rem; margin: 1rem 0; }
-.controls { display: flex; gap: 0.75rem; margin: 1rem 0; }
+.controls { display: flex; gap: var(--gap); margin: 1rem 0; }
 button {
-  padding: 0.6rem 1rem; border: 1px solid #2a2a3a; background:#151521; color:#e7e7ee;
+  padding: .6rem 1rem;
+  border: 1px solid var(--border);
+  background: #151521; color: var(--fg);
   border-radius: 12px; cursor: pointer; font-weight: 600;
 }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+button:disabled { opacity: .5; cursor: not-allowed; }
 
+/* Progress bar */
 .progress {
   position: relative;
-  background: #141420;
-  border: 1px solid #2a2a3a;
-  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   height: 28px;
   overflow: hidden;
 }
 .progress .bar {
   position: absolute; inset: 0;
   width: var(--pct);
-  background: linear-gradient(90deg, #6ee7ff, #a78bfa 40%, #f472b6);
+  background: linear-gradient(90deg, var(--accent1), var(--accent2) 40%, var(--accent3));
   transition: width 40ms linear;
 }
 
 .tickmarks {
   position: absolute; inset: 0;
   display: grid; grid-template-columns: repeat(5, 1fr);
-  font-size: 12px; color: #8c8ca1; mix-blend-mode: screen;
+  font-size: 12px; color: var(--muted);
 }
 .tickmarks span { justify-self: center; align-self: center; }
 
-.stats { margin-top: 0.75rem; font-variant-numeric: tabular-nums; }
-footer { margin-top: 2rem; color: #7c7c90; font-size: 0.9rem; }
+.stats { margin-top: .75rem; font-variant-numeric: tabular-nums; }
+footer { margin-top: 2rem; color: #7c7c90; font-size: .9rem; }
+
+/* Finish Overlay */
+.overlay {
+  position: fixed; inset: 0;
+  display: none; /* toggled to flex from JS */
+  align-items: center; justify-content: center;
+  background:
+    radial-gradient(1200px circle at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.85)),
+    linear-gradient(120deg, rgba(110,231,255,.25), rgba(167,139,250,.25) 40%, rgba(244,114,182,.25));
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+}
+.overlay .overlay-card {
+  text-align: center;
+  padding: 24px 28px;
+  border-radius: 20px;
+  background: rgba(20,20,32,.80);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  animation: pop-in 320ms cubic-bezier(.2,1,.2,1) both;
+}
+.overlay .overlay-title {
+  font-size: 3rem; letter-spacing: 2px; font-weight: 900;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2) 40%, var(--accent3));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 0 20px rgba(167,139,250,.6);
+}
+.overlay .overlay-time { margin-top: .6rem; font-size: 1.4rem; color: var(--fg); }
+.overlay .overlay-affirmation { margin-top: .25rem; font-size: 1rem; color: var(--muted); }
+.overlay .overlay-btn {
+  margin-top: 1.2rem; padding: .7rem 1.1rem;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: #151521; color: var(--fg); font-weight: 700; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(167,139,250,.25);
+}
+
+@keyframes pop-in {
+  0% { transform: scale(.96); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress .bar { transition: none; }
+  .overlay .overlay-card { animation: none; }
+}

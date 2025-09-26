@@ -27,6 +27,16 @@
     <footer>Tip: alternate hands/keys (e.g., A/L) for speed.</footer>
   </main>
 
+  <!-- Full-screen finish overlay -->
+  <div id="done-overlay" class="overlay" aria-hidden="true">
+    <div class="overlay-card">
+      <div class="overlay-title">DONE!!!</div>
+      <div class="overlay-time"><span id="overlay-time">0.000</span> seconds</div>
+      <div class="overlay-affirmation" id="overlay-affirmation">You are speed!</div>
+      <button id="btn-again" class="overlay-btn">Race again</button>
+    </div>
+  </div>
+
   <script type="module">
     import init from "./pkg/keypress_racer.js";
     init();

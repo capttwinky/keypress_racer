@@ -4,6 +4,7 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{Document, HtmlElement, KeyboardEvent, Performance, Window};
+use js_sys::Math;
 
 #[wasm_bindgen(start)]
 pub fn start() {
@@ -24,10 +25,17 @@ struct App {
     btn_reset: HtmlElement,
     progress: HtmlElement,
     stats: HtmlElement,
+    // Overlay UI
+    overlay: HtmlElement,
+    overlay_time: HtmlElement,
+    overlay_affirm: HtmlElement,
+    btn_again: HtmlElement,
+
     target: u32,
     count: u32,
     running: bool,
     start_ts: f64,
+    last_total_secs: f64,
     // Keypress race logic
     pressed: HashSet<String>,
     // Keep listeners alive
@@ -58,6 +66,19 @@ impl App {
             .query_selector("#stats").unwrap().unwrap()
             .dyn_into::<HtmlElement>().unwrap();
 
+        let overlay = document
+            .query_selector("#done-overlay").unwrap().unwrap()
+            .dyn_into::<HtmlElement>().unwrap();
+        let overlay_time = document
+            .query_selector("#overlay-time").unwrap().unwrap()
+            .dyn_into::<HtmlElement>().unwrap();
+        let overlay_affirm = document
+            .query_selector("#overlay-affirmation").unwrap().unwrap()
+            .dyn_into::<HtmlElement>().unwrap();
+        let btn_again = document
+            .query_selector("#btn-again").unwrap().unwrap()
+            .dyn_into::<HtmlElement>().unwrap();
+
         Self {
             window,
             document,
@@ -67,10 +88,15 @@ impl App {
             btn_reset,
             progress,
             stats,
+            overlay,
+            overlay_time,
+            overlay_affirm,
+            btn_again,
             target: 1000,
             count: 0,
             running: false,
             start_ts: 0.0,
+            last_total_secs: 0.0,
             pressed: HashSet::new(),
             keydown_closure: None,
             keyup_closure: None,
@@ -79,6 +105,7 @@ impl App {
 
     fn init(&mut self) -> Result<(), JsValue> {
         self.render();
+        self.hide_overlay();
 
         // Start (use event listener API)
         let start_cb = {
@@ -99,6 +126,21 @@ impl App {
         self.btn_reset
             .add_event_listener_with_callback("click", reset_cb.as_ref().unchecked_ref())?;
         reset_cb.forget();
+
+        // Play again button on overlay
+        let again_cb = {
+            Closure::<dyn FnMut()>::new(move || {
+                APP.with(|app| {
+                    let mut a = app.borrow_mut();
+                    a.hide_overlay();
+                    a.reset().ok();
+                    a.start_race().ok();
+                });
+            })
+        };
+        self.btn_again
+            .add_event_listener_with_callback("click", again_cb.as_ref().unchecked_ref())?;
+        again_cb.forget();
 
         // Keydown handler: count on first transition to down (no auto-repeat)
         let kd = {
@@ -145,12 +187,15 @@ impl App {
         self.start_ts = 0.0;
         self.running = true;
         self.pressed.clear();
+        self.hide_overlay();
         self.render();
         Ok(())
     }
 
     fn finish_race(&mut self) {
         self.running = false;
+        let total_secs = (self.performance.now() - self.start_ts) / 1000.0;
+        self.show_overlay(total_secs.max(0.0));
         self.render();
     }
 
@@ -159,6 +204,7 @@ impl App {
         self.start_ts = 0.0;
         self.running = false;
         self.pressed.clear();
+        self.hide_overlay();
         self.render();
         Ok(())
     }
@@ -254,5 +300,30 @@ impl App {
         }
 
         self.stats.set_inner_text(&msg);
+    }
+
+    fn show_overlay(&mut self, seconds: f64) {
+        self.last_total_secs = seconds;
+        self.overlay_time.set_inner_text(&format!("{:.3}", seconds));
+        let affirmations = [
+            "Lightning fingers!",
+            "You are speed!",
+            "Keyboard ninja!",
+            "Blistering!",
+            "Ridiculous!",
+            "Godlike!",
+            "Insane pace!",
+            "Turbo mode!",
+        ];
+        let idx = (Math::random() * affirmations.len() as f64).floor() as usize;
+        let pick = affirmations[idx.min(affirmations.len() - 1)];
+        self.overlay_affirm.set_inner_text(pick);
+        self.overlay.style().set_property("display", "flex").ok();
+        self.overlay.set_attribute("aria-hidden", "false").ok();
+    }
+
+    fn hide_overlay(&self) {
+        self.overlay.style().set_property("display", "none").ok();
+        self.overlay.set_attribute("aria-hidden", "true").ok();
     }
 }
