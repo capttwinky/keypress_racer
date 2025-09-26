@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keypress Racer: 1000</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main id="app">
+    <h1>Keypress Racer: 1000</h1>
+    <p>Press any keys as fast as you can. Auto-repeat doesn’t count; a press→release cycle does.</p>
+
+    <div class="controls">
+      <button id="btn-start">Start</button>
+      <button id="btn-reset">Reset</button>
+    </div>
+
+    <div id="progress" class="progress">
+      <div class="bar"></div>
+      <div class="tickmarks">
+        <span>0</span><span>250</span><span>500</span><span>750</span><span>1000</span>
+      </div>
+    </div>
+
+    <div id="stats" class="stats">Count: 0/1000 • 0.0% • 0.00 s • 0.0 keys/s</div>
+    <footer>Tip: alternate hands/keys (e.g., A/L) for speed.</footer>
+  </main>
+
+  <script type="module">
+    import init from "./pkg/keypress_racer.js";
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+:root {
+  --pct: 0%;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: #0b0b0f; color: #e7e7ee;
+}
+main { max-width: 720px; margin: 4rem auto; padding: 0 1rem; }
+
+h1 { margin: 0 0 0.25rem; font-size: 2rem; }
+p { color: #b8b8c2; margin: 0 0 1rem; }
+
+controls { display: flex; gap: 0.75rem; margin: 1rem 0; }
+.controls { display: flex; gap: 0.75rem; margin: 1rem 0; }
+button {
+  padding: 0.6rem 1rem; border: 1px solid #2a2a3a; background:#151521; color:#e7e7ee;
+  border-radius: 12px; cursor: pointer; font-weight: 600;
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.progress {
+  position: relative;
+  background: #141420;
+  border: 1px solid #2a2a3a;
+  border-radius: 14px;
+  height: 28px;
+  overflow: hidden;
+}
+.progress .bar {
+  position: absolute; inset: 0;
+  width: var(--pct);
+  background: linear-gradient(90deg, #6ee7ff, #a78bfa 40%, #f472b6);
+  transition: width 40ms linear;
+}
+
+.tickmarks {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  font-size: 12px; color: #8c8ca1; mix-blend-mode: screen;
+}
+.tickmarks span { justify-self: center; align-self: center; }
+
+.stats { margin-top: 0.75rem; font-variant-numeric: tabular-nums; }
+footer { margin-top: 2rem; color: #7c7c90; font-size: 0.9rem; }
